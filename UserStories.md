@@ -17,14 +17,14 @@
 10. [x] Server can save the workshop and its notes to the database 
 11. [x] Server allows retrieval of workshop data
 
-12. [x] App can do summarisation based on the current notes (Check sumy)
+12. [x] App can do summarisation based on the current notes (Check sumy), checked num of sentences
 
 13. [x] User can sign up
 14. [x] User can log in
 
 15. [ ] User can connect to a board by inputting necessary information(client id, client secret, board id etc)
 
-16. [ ] Deploy the app to a public website, then publish miro app to check if it works on other devices
+16. [x] Deploy the app to a public website, then publish miro app to check if it works on other devices
 
 Extra features:
 1. [ ] Server can get data from Miro boards, according to frames

@@ -18,10 +18,12 @@ const workshopSchema = new mongoose.Schema(
             required: true
         },
         workshopAgenda: {
-            type: String
+            type: String,
+            default: ""
         },
         workshopSummary: {
-            type: String
+            type: String,
+            default: ""
         }
     }
 )

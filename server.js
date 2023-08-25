@@ -786,7 +786,6 @@ io.on('connection', (socket) => {
     // }
     console.log("connectedUsers")
     console.log(connectedUsers)
-    console.log(connectedUsers["hey"])
  
     socket.on('sendMessage', (data) => {
       console.log("data")
@@ -923,16 +922,16 @@ app.get("/logout", (req, res) => {
 
 
 app.post('/summarise', (req, res) => {
-  const { notes } = req.body; // Assuming you're passing parameters as query parameters
+  const { notes, sensitivity } = req.body; // Assuming you're passing parameters as query parameters
 
   // console.log("notes")
   // console.log(notes)
   // Replace 'python-script.py' with your actual Python script filename
-  const pythonProcess = spawn('python', ['NLP.py', notes]);
+  const pythonProcess = spawn('python', ['NLP.py', notes, sensitivity]);
 
   pythonProcess.stdout.on('data', (data) => {
     console.log(`Summarisation Output: ${data}`);
-    res.send(`Summarisation Output: ${data}`);
+    res.send(`${data}`);
   });
 
   pythonProcess.stderr.on('data', (data) => {
@@ -941,7 +940,7 @@ app.post('/summarise', (req, res) => {
   });
 });
 
-
+ 
 
 
 
