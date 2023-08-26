@@ -730,7 +730,7 @@ const mongoose = require('mongoose')
 const jsonwebtoken = require("jsonwebtoken");
 const PORT = process.env.PORT || 3500
 const { spawn } = require('child_process');
-
+const natural = require('natural');
 
 
 
@@ -926,7 +926,7 @@ app.post('/summarise', (req, res) => {
 
 
 
-  const natural = require('natural');
+
 const tokenizer = new natural.SentenceTokenizer();
 const sentences = tokenizer.tokenize(notes);
 
