@@ -924,20 +924,44 @@ app.get("/logout", (req, res) => {
 app.post('/summarise', (req, res) => {
   const { notes, sensitivity } = req.body; // Assuming you're passing parameters as query parameters
 
+
+
+  const natural = require('natural');
+const tokenizer = new natural.SentenceTokenizer();
+const sentences = tokenizer.tokenize(notes);
+
+const { Tfidf, TextRank } = natural;
+const tfidf = new Tfidf();
+const rank = new TextRank();
+
+sentences.forEach(sentence => {
+  const tokens = sentence.split(' ');
+  tfidf.addDocument(tokens);
+  rank.addNode(tokens);
+});
+
+rank.calculate(0.85, 0.0001, 10);
+
+const rankedSentences = rank.top(sensitivity); // Adjust the number of sentences you want in the summary
+
+const summary = rankedSentences.map(index => sentences[index]).join(' ');
+
+console.log(summary);
+
   // console.log("notes")
   // console.log(notes)
   // Replace 'python-script.py' with your actual Python script filename
-  const pythonProcess = spawn('python', ['NLP.py', notes, sensitivity]);
+  // const pythonProcess = spawn('python', ['NLP.py', notes, sensitivity]);
 
-  pythonProcess.stdout.on('data', (data) => {
-    console.log(`Summarisation Output: ${data}`);
-    res.send(`${data}`);
-  });
+  // pythonProcess.stdout.on('data', (data) => {
+  //   console.log(`Summarisation Output: ${data}`);
+  //   res.send(`${data}`);
+  // });
 
-  pythonProcess.stderr.on('data', (data) => {
-    console.error(`Summarisation Error: ${data}`);
-    res.status(500).send(`Summarisation Error: ${data}`);
-  });
+  // pythonProcess.stderr.on('data', (data) => {
+  //   console.error(`Summarisation Error: ${data}`);
+  //   res.status(500).send(`Summarisation Error: ${data}`);
+  // });
 });
 
  
