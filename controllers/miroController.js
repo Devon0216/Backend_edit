@@ -20,7 +20,7 @@ const getAllNotes = asyncHandler(async (req, res) => {
     // const USER_ID = "WE_DONT_NEED_A_REAL_ID_FOR_THIS_EXAMPLE";
 
     // res.redirect("https://google.com");
-    res.redirect("https://miro.com/oauth/authorize?response_type=code&client_id=3458764560345376881&redirect_uri=https://whiteboarddj.onrender.com/dash/authorize");
+    res.redirect("https://miro.com/oauth/authorize?response_type=code&client_id=3458764560345376881&redirect_uri=https://whiteboarddj.vercel.app//dash/authorize");
     // let board
     // if ( miro.isAuthorized(USER_ID)) {
     //      miro.handleAuthorizationCodeRequest(USER_ID, req);

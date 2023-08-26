@@ -758,7 +758,7 @@ const server = http.createServer(app);
 
 const io = socketIo(server, {
   cors: {
-    origin: "https://whiteboarddj.onrender.com", // Allow requests from this origin
+    origin: "https://whiteboarddj.vercel.app/", // Allow requests from this origin
     methods: ["GET", "POST"]
   }
 });
