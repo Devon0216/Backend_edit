@@ -925,28 +925,121 @@ app.post('/summarise', (req, res) => {
   const { notes, sensitivity } = req.body; // Assuming you're passing parameters as query parameters
 
 
+//   console.log("notes")
+//   console.log(notes)
+//   console.log("sensitivity")
+//   console.log(sensitivity)
+//     // Tokenize the document into sentences
+//     const tokenizer = new natural.SentenceTokenizer();
+//     const sentences = tokenizer.tokenize(notes);
+
+//     console.log("sentences")
+//     console.log(sentences)
+
+//     const tokenizedSentences = sentences.map(sentence =>
+//       new natural.WordTokenizer().tokenize(sentence)
+//     );
+
+    
+//     console.log("tokenizedSentences")
+//     console.log(tokenizedSentences)
+
+//     // Calculate the TF-IDF scores for sentences
+//     const tfidf = new natural.TfIdf();
+//     tokenizedSentences.forEach((sentenceTokens, index) => {
+//       tfidf.addDocument(sentenceTokens);
+//     });
+
+//     console.log("tfidf")
+//     console.log(tfidf)
+
+//     // Get the top N sentences as the summary
+//     const numSentencesInSummary = sensitivity; // Change this as needed
+//     const summarySentences = [];
+
+//     console.log("tfidf.listTerms(0)")
+//     console.log(tfidf.listTerms(0))
+//     // tfidf.listTerms(0).forEach((item) => {
+//     //   console.log("item")
+//     //   console.log(item)
+//     //   const sentenceIndex = item.document;
+//     //   console.log("sentenceIndex")
+//     //   console.log(sentenceIndex)
+//     //   summarySentences.push(sentences[sentenceIndex]);
+//     //   if (summarySentences.length >= numSentencesInSummary) {
+//     //     return false; // Stop after getting required sentences
+//     //   }
+//     // });
+//     // for (let i = 0; i < numSentencesInSummary; i++) {
+//     //   const sentenceIndex = tfidf.listTerms(i)[0].document;
+//     //   summarySentences.push(sentences[sentenceIndex]);
+//     // }
+//     sentences.forEach((sentence, sentenceIndex) => {
+//       let totalScore = 0;
+//       const tokens = new natural.WordTokenizer().tokenize(sentence);
+//       tokens.forEach((token) => {
+//         totalScore += tfidf.tfidf(token, sentenceIndex);
+//       });
+//       summarySentences.push({ sentence, score: totalScore });
+//     });
+
+//     // Sort sentences by score and get the top N sentences
+//     summarySentences.sort((a, b) => b.score - a.score);
+//     const topSentences = summarySentences.slice(0, numSentencesInSummary);
+
+//     const summary = topSentences.map((item) => item.sentence).join(' ');
+
+//     console.log("summarySentences")
+//     console.log(summarySentences)
 
 
-const tokenizer = new natural.SentenceTokenizer();
-const sentences = tokenizer.tokenize(notes);
 
-const { Tfidf, TextRank } = natural;
-const tfidf = new Tfidf();
-const rank = new TextRank();
 
-sentences.forEach(sentence => {
-  const tokens = sentence.split(' ');
-  tfidf.addDocument(tokens);
-  rank.addNode(tokens);
-});
 
-rank.calculate(0.85, 0.0001, 10);
 
-const rankedSentences = rank.top(sensitivity); // Adjust the number of sentences you want in the summary
+// console.log(summary);
 
-const summary = rankedSentences.map(index => sentences[index]).join(' ');
 
-console.log(summary);
+
+
+
+
+try {
+
+  // Tokenize the document into sentences
+  const tokenizer = new natural.SentenceTokenizer();
+  const sentences = tokenizer.tokenize(notes);
+
+  // Create a new TfIdf instance
+  const tfidf = new natural.TfIdf();
+
+  // Add documents (sentences) to the TfIdf instance
+  sentences.forEach((sentence) => {
+    tfidf.addDocument(new natural.WordTokenizer().tokenize(sentence));
+  });
+
+  // Calculate the TF-IDF scores and select top sentences for summary
+  const numSentencesInSummary = sensitivity; // Change this as needed
+  const summarySentences = [];
+  sentences.forEach((sentence, sentenceIndex) => {
+    let totalScore = 0;
+    const tokens = new natural.WordTokenizer().tokenize(sentence);
+    tokens.forEach((token) => {
+      totalScore += tfidf.tfidf(token, sentenceIndex);
+    });
+    summarySentences.push({ sentence, score: totalScore });
+  });
+
+  // Sort sentences by score and get the top N sentences
+  summarySentences.sort((a, b) => b.score - a.score);
+  const topSentences = summarySentences.slice(0, numSentencesInSummary);
+
+  const summary = topSentences.map((item) => item.sentence).join(' ');
+  res.json({ summary });
+} catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'An error occurred' });
+}
 
   // console.log("notes")
   // console.log(notes)
