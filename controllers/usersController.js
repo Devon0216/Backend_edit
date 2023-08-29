@@ -42,7 +42,7 @@ const getOneUser = asyncHandler(async (req, res) => {
 // @desc Get one user
 // @route GET /users/username
 // @access Private
-const getUserByName = asyncHandler(async (req, res) => {
+const getUserByMiroId = asyncHandler(async (req, res) => {
     // console.log("req.body")
     // console.log(req.body)
     // Get all users from MongoDB
@@ -176,7 +176,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 module.exports = {
     getAllUsers,
     getOneUser,
-    getUserByName,
+    getUserByMiroId,
     createNewUser,
     updateUser,
     deleteUser

@@ -12,7 +12,7 @@ router.route('/username')
     .post(usersController.getOneUser)
 
 router.route('/useridByName')
-    .post(usersController.getUserByName)
+    .post(usersController.getUserByMiroId)
     
 
 
