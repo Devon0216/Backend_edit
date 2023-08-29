@@ -20,7 +20,7 @@ const getData = async (body) => {
   console.log(body);
       const options = {
         'method': 'POST',
-        'url': `https://api.miro.com/v1/oauth/token?grant_type=authorization_code&client_id=3458764560345376881&client_secret=Ut9LixsPne5ukQbVSPRsqtbfOoUV6QA2&code=${body}&redirect_uri=https://whiteboarddj.onrender.com/dash/authorize`,
+        'url': `https://api.miro.com/v1/oauth/token?grant_type=authorization_code&client_id=3458764560345376881&client_secret=Ut9LixsPne5ukQbVSPRsqtbfOoUV6QA2&code=${body}&redirect_uri=http://localhost:3000/dash/authorize`,
         'headers': {
           'accept': 'application/json'
         },
@@ -43,6 +43,8 @@ const getData = async (body) => {
            return e;
       }
 }
+
+
     
 router.route('/').post(async function(req, res) {
        //make a call to another rest api and then res.send the result
@@ -73,6 +75,7 @@ router.route('/').post(async function(req, res) {
       }
        
 })
+
 
 
 module.exports = router

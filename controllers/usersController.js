@@ -8,7 +8,7 @@ const bcrypt = require('bcrypt')
 // @access Private
 const getAllUsers = asyncHandler(async (req, res) => {
     // Get all users from MongoDB
-    const users = await User.find().select('-password').lean()
+    const users = await User.find().lean().exec()
 
     // If no users 
     if (!users?.length) {
@@ -23,13 +23,13 @@ const getAllUsers = asyncHandler(async (req, res) => {
 // @access Private
 const getOneUser = asyncHandler(async (req, res) => {
     // Get all users from MongoDB
-    const { username, password } = req.body
+    const { username, miroId } = req.body
 
-    if (!username || !password ) {
+    if (!username || !miroId ) {
         return res.status(400).json({ message: 'All fields are required' })
     }
 
-    const user = await User.find({ username: `${username}`, password: `${password}` }).lean().exec()
+    const user = await User.find({ username: `${username}`, miroId: `${miroId}` }).lean().exec()
 
     // If no users 
     if (!user?.length) {
@@ -46,16 +46,16 @@ const getUserByName = asyncHandler(async (req, res) => {
     // console.log("req.body")
     // console.log(req.body)
     // Get all users from MongoDB
-    const { username } = req.body
+    const { miroId } = req.body
 
     // console.log("username")
     // console.log(username)
 
-    if (!username  ) {
+    if (!miroId  ) {
         return res.status(400).json({ message: 'All fields are required' })
     }
 
-    const user = await User.find({ username: `${username}` }).lean().exec()
+    const user = await User.find({ miroId: `${miroId}` }).lean().exec()
 
     // If no users 
     if (!user?.length) {
@@ -69,30 +69,30 @@ const getUserByName = asyncHandler(async (req, res) => {
 // @route POST /users
 // @access Private
 const createNewUser = asyncHandler(async (req, res) => {
-    const { username, password } = req.body
+    const { username, miroId } = req.body
 
     // Confirm data
-    if (!username || !password ) {
+    if (!username || !miroId ) {
         return res.status(400).json({ message: 'All fields are required' })
     }
 
     // Check for duplicate username
-    const duplicate = await User.findOne({ username }).lean().exec()
+    const duplicate = await User.findOne({ miroId }).lean().exec()
 
     if (duplicate) {
-        return res.status(409).json({ message: 'Duplicate username' })
+        return res.status(409).json({ message: 'Duplicate miro Id' })
     }
 
     // Hash password 
     // const hashedPwd = await bcrypt.hash(password, 10) // salt rounds
 
-    const userObject = { username, "password": password }
+    const userObject = { username, "miroId": miroId }
 
     // Create and store new user 
     const user = await User.create(userObject)
 
     if (user) { //created 
-        res.status(201).json({ message: `New user ${username} created` })
+        res.status(201).json({ message: `New user ${username} with miro Id ${miroId} created` })
     } else {
         res.status(400).json({ message: 'Invalid user data received' })
     }
@@ -102,11 +102,11 @@ const createNewUser = asyncHandler(async (req, res) => {
 // @route PATCH /users
 // @access Private
 const updateUser = asyncHandler(async (req, res) => {
-    const { id, username, roles, password, workshops } = req.body
+    const { id, username, miroId, workshops } = req.body
 
     // Confirm data 
-    if (!id || !username || !roles) {
-        return res.status(400).json({ message: 'All fields except password are required' })
+    if (!id || !username ) {
+        return res.status(400).json({ message: 'All fields except miroId are required' })
     }
 
     // Does the user exist to update?
@@ -125,11 +125,11 @@ const updateUser = asyncHandler(async (req, res) => {
     }
 
     user.username = username
-    user.roles = roles
+    // user.roles = roles
 
-    if (password) {
+    if (miroId) {
         // Hash password 
-        user.password = password// salt rounds 
+        user.miroId = miroId// salt rounds 
     }
 
     if (workshops) {

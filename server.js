@@ -758,7 +758,7 @@ const server = http.createServer(app);
 
 const io = socketIo(server, {
   cors: {
-    origin: "https://whiteboarddj.onrender.com", // Allow requests from this origin
+    origin: "http://localhost:3000", // Allow requests from this origin
     methods: ["GET", "POST"]
   }
 });
@@ -925,121 +925,42 @@ app.post('/summarise', (req, res) => {
   const { notes, sensitivity } = req.body; // Assuming you're passing parameters as query parameters
 
 
-//   console.log("notes")
-//   console.log(notes)
-//   console.log("sensitivity")
-//   console.log(sensitivity)
-//     // Tokenize the document into sentences
-//     const tokenizer = new natural.SentenceTokenizer();
-//     const sentences = tokenizer.tokenize(notes);
+  try {
 
-//     console.log("sentences")
-//     console.log(sentences)
+    // Tokenize the document into sentences
+    const tokenizer = new natural.SentenceTokenizer();
+    const sentences = tokenizer.tokenize(notes);
 
-//     const tokenizedSentences = sentences.map(sentence =>
-//       new natural.WordTokenizer().tokenize(sentence)
-//     );
+    // Create a new TfIdf instance
+    const tfidf = new natural.TfIdf();
 
-    
-//     console.log("tokenizedSentences")
-//     console.log(tokenizedSentences)
-
-//     // Calculate the TF-IDF scores for sentences
-//     const tfidf = new natural.TfIdf();
-//     tokenizedSentences.forEach((sentenceTokens, index) => {
-//       tfidf.addDocument(sentenceTokens);
-//     });
-
-//     console.log("tfidf")
-//     console.log(tfidf)
-
-//     // Get the top N sentences as the summary
-//     const numSentencesInSummary = sensitivity; // Change this as needed
-//     const summarySentences = [];
-
-//     console.log("tfidf.listTerms(0)")
-//     console.log(tfidf.listTerms(0))
-//     // tfidf.listTerms(0).forEach((item) => {
-//     //   console.log("item")
-//     //   console.log(item)
-//     //   const sentenceIndex = item.document;
-//     //   console.log("sentenceIndex")
-//     //   console.log(sentenceIndex)
-//     //   summarySentences.push(sentences[sentenceIndex]);
-//     //   if (summarySentences.length >= numSentencesInSummary) {
-//     //     return false; // Stop after getting required sentences
-//     //   }
-//     // });
-//     // for (let i = 0; i < numSentencesInSummary; i++) {
-//     //   const sentenceIndex = tfidf.listTerms(i)[0].document;
-//     //   summarySentences.push(sentences[sentenceIndex]);
-//     // }
-//     sentences.forEach((sentence, sentenceIndex) => {
-//       let totalScore = 0;
-//       const tokens = new natural.WordTokenizer().tokenize(sentence);
-//       tokens.forEach((token) => {
-//         totalScore += tfidf.tfidf(token, sentenceIndex);
-//       });
-//       summarySentences.push({ sentence, score: totalScore });
-//     });
-
-//     // Sort sentences by score and get the top N sentences
-//     summarySentences.sort((a, b) => b.score - a.score);
-//     const topSentences = summarySentences.slice(0, numSentencesInSummary);
-
-//     const summary = topSentences.map((item) => item.sentence).join(' ');
-
-//     console.log("summarySentences")
-//     console.log(summarySentences)
-
-
-
-
-
-
-// console.log(summary);
-
-
-
-
-
-
-try {
-
-  // Tokenize the document into sentences
-  const tokenizer = new natural.SentenceTokenizer();
-  const sentences = tokenizer.tokenize(notes);
-
-  // Create a new TfIdf instance
-  const tfidf = new natural.TfIdf();
-
-  // Add documents (sentences) to the TfIdf instance
-  sentences.forEach((sentence) => {
-    tfidf.addDocument(new natural.WordTokenizer().tokenize(sentence));
-  });
-
-  // Calculate the TF-IDF scores and select top sentences for summary
-  const numSentencesInSummary = sensitivity; // Change this as needed
-  const summarySentences = [];
-  sentences.forEach((sentence, sentenceIndex) => {
-    let totalScore = 0;
-    const tokens = new natural.WordTokenizer().tokenize(sentence);
-    tokens.forEach((token) => {
-      totalScore += tfidf.tfidf(token, sentenceIndex);
+    // Add documents (sentences) to the TfIdf instance
+    sentences.forEach((sentence) => {
+      tfidf.addDocument(new natural.WordTokenizer().tokenize(sentence));
     });
-    summarySentences.push({ sentence, score: totalScore });
-  });
 
-  // Sort sentences by score and get the top N sentences
-  summarySentences.sort((a, b) => b.score - a.score);
-  const topSentences = summarySentences.slice(0, numSentencesInSummary);
+    // Calculate the TF-IDF scores and select top sentences for summary
+    const numSentencesInSummary = sensitivity; // Change this as needed
+    const summarySentences = [];
+    sentences.forEach((sentence, sentenceIndex) => {
+      let totalScore = 0;
+      const tokens = new natural.WordTokenizer().tokenize(sentence);
+      tokens.forEach((token) => {
+        totalScore += tfidf.tfidf(token, sentenceIndex);
+      });
+      summarySentences.push({ sentence, score: totalScore });
+    });
 
-  const summary = topSentences.map((item) => item.sentence).join(' ');
-  res.json({ summary });
-} catch (error) {
-  console.error(error);
-  res.status(500).json({ error: 'An error occurred' });
-}
+    // Sort sentences by score and get the top N sentences
+    summarySentences.sort((a, b) => b.score - a.score);
+    const topSentences = summarySentences.slice(0, numSentencesInSummary);
+
+    const summary = topSentences.map((item) => item.sentence).join(' ');
+    res.json({ summary });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred' });
+  }
 
   // console.log("notes")
   // console.log(notes)
@@ -1085,7 +1006,7 @@ mongoose.connection.once('open', () => {
 
 mongoose.connection.on('error', err => {
     console.log(err)
-    logEvents(`${err.no}: ${err.code}\t${err.syscall}\t${err.hostname}`, 'mongoErrLog.log')
+    // logEvents(`${err.no}: ${err.code}\t${err.syscall}\t${err.hostname}`, 'mongoErrLog.log')
 })
 
 module.exports = {app}

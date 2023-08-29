@@ -5,14 +5,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    password: {
+    miroId: {
         type: String,
         required: true
     },
-    roles: {
-        type: String,
-        default: "Facilitator"
-    },
+    // roles: {
+    //     type: String,
+    //     default: "Facilitator"
+    // },
     workshops: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Workshop'
