@@ -758,7 +758,7 @@ const server = http.createServer(app);
 
 const io = socketIo(server, {
   cors: {
-    origin: "https://whiteboarddj.onrender.com", // Allow requests from this origin
+    origin: "http://localhost:3000", // Allow requests from this origin
     methods: ["GET", "POST"]
   }
 });
@@ -767,30 +767,32 @@ const connectedUsers = {}; // Store connected users and their socket IDs
 
 io.on('connection', (socket) => {
   console.log("connected")
-  // const userId = socket.request.session.userId; // Assuming you're using sessions for authentication
   const query = socket.handshake.query;
   console.log("query")
   console.log(query)
 
   // // Associate the user's socket with their user ID
-  // connectedUsers[userId] = socket.id;
+
   if (query.userId) {
     const userId = query.userId;
+
 
     console.log("userId")
     console.log(userId)
 
-    // Associate the user's socket with their user ID
-    // if (connectedUsers[userId] === undefined) {
-      connectedUsers[userId] = socket.id;
-    // }
+
+    connectedUsers[userId] = socket.id;
+    io.emit('userList', Object.keys(connectedUsers));
+
     console.log("connectedUsers")
     console.log(connectedUsers)
  
     socket.on('sendMessage', (data) => {
+      console.log("connectedUsers")
+      console.log(connectedUsers)
       console.log("data")
-      console.log(data.message)
-      console.log(data.recipients)
+      console.log(data.message) 
+      console.log(data.recipients)   
       // Send the message to the specified recipients' sockets
       data.recipients.forEach(recipientId => {
         console.log(recipientId)
@@ -803,7 +805,24 @@ io.on('connection', (socket) => {
       });
     });
 
-    socket.on('sendAgenda', (data) => {
+    // socket.on('sendAgenda', (data) => {
+    //   console.log("data")
+    //   console.log(data.agenda)
+    //   console.log(data.recipients)
+    //   // Send the message to the specified recipients' sockets
+    //   data.recipients.forEach(recipientId => {
+    //     console.log(recipientId)
+    //     const recipientSocketId = connectedUsers[recipientId];
+    //     console.log(recipientSocketId)
+    //     if (recipientSocketId) {
+    //       console.log("sedning agenda")
+    //       console.log(data)
+    //       io.to(recipientSocketId).emit('receiveAgenda', data );
+    //     }
+    //   });
+    // });
+
+    socket.on('sendRunnigAgenda', (data) => {
       console.log("data")
       console.log(data.agenda)
       console.log(data.recipients)
@@ -813,25 +832,24 @@ io.on('connection', (socket) => {
         const recipientSocketId = connectedUsers[recipientId];
         console.log(recipientSocketId)
         if (recipientSocketId) {
-          console.log("sedning agenda")
+          console.log("sendRunnigAgenda")
           console.log(data)
-          io.to(recipientSocketId).emit('receiveAgenda', data );
+          io.to(recipientSocketId).emit('receiveRunningAgenda', data );
         }
       });
     });
+    
 
     socket.on('disconnect', () => {
-      // Remove the user's socket ID when they disconnect
       console.log("disconnected")
-      delete connectedUsers[userId];
+      if (query.userId) {
+        delete connectedUsers[query.userId];
+        io.emit('userList', Object.keys(connectedUsers));
+      }
     });
   }
 
-  // socket.on('disconnect', () => {
-  //   // Remove the user's socket ID when they disconnect
-  //   console.log("disconnect")
-  //   // delete connectedUsers[userId];
-  // });
+
 });
 
 // Set up routes or other middleware as needed
