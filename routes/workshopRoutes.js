@@ -21,7 +21,4 @@ router.route('/workshopById')
     .post(workshopController.getWorkshopById)
 
 
-// router.route('/workshopById')
-//     .post(workshopController.getWorkshopById)
-
 module.exports = router

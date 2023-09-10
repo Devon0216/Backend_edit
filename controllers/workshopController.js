@@ -1,8 +1,8 @@
-const Note = require('../models/Note')
-const User = require('../models/User')
+// const Note = require('../models/Note')
+// const User = require('../models/User')
 const Workshop = require('../models/Workshop')
 const asyncHandler = require('express-async-handler')
-const mongoose = require('mongoose')
+// const mongoose = require('mongoose')
 
 // @desc Get all workshops 
 // @route GET /workshops
@@ -25,7 +25,6 @@ const getAllWorkshops = asyncHandler(async (req, res) => {
 const getUserWorkshops = asyncHandler(async (req, res) => {
     // Get all notes from MongoDB
     const { userid } = req.body
-    // console.log("Serverside: " + userid)
 
     if (!userid ) {
         return res.status(400).json({ message: 'All fields are required' })
@@ -50,7 +49,6 @@ const getUserWorkshops = asyncHandler(async (req, res) => {
 const getWorkshopByName = asyncHandler(async (req, res) => {
     // Get all notes from MongoDB
     const { workshopname } = req.body
-    // console.log("Serverside: " + userid)
 
     if (!workshopname ) {
         return res.status(400).json({ message: 'All fields are required' })
@@ -73,7 +71,6 @@ const getWorkshopByName = asyncHandler(async (req, res) => {
 const getWorkshopById = asyncHandler(async (req, res) => {
     // Get all notes from MongoDB
     const { id } = req.body
-    // console.log("Serverside: " + userid)
 
     if (!id ) {
         return res.status(400).json({ message: 'All fields are required' })
@@ -87,30 +84,6 @@ const getWorkshopById = asyncHandler(async (req, res) => {
 
     res.json(workshop)
 })
-
-
-// // @desc Get one user workshops 
-// // @route GET /workshops/workshopid
-// // @access Private
-// const getWorkshopById = asyncHandler(async (req, res) => {
-//     // Get all notes from MongoDB
-//     const { id } = req.body
-//     // console.log("Serverside: " + userid)
-
-//     if (!id ) {
-//         return res.status(400).json({ message: 'ID is required' })
-//     }
-
-//     const workshop = await Workshop.findById(id).exec()
-
-//     // If no users 
-//     if (!workshop?.length) {
-//         return res.status(400).json({ message: 'No workshops found' })
-//     }
-
-//     res.json(workshop)
-// })
-
 
 
 // @desc Create new workshop
@@ -160,21 +133,9 @@ const updateWorkshop = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: 'Workshop not found' })
     }
 
-    // // Check for duplicate title
-    // const duplicate = await Note.findOne({ title }).lean().exec()
-
-    // // Allow renaming of the original note 
-    // if (duplicate && duplicate?._id.toString() !== id) {
-    //     return res.status(409).json({ message: 'Duplicate note title' })
-    // }
-
-    // workshop.User = User
     if (Note){
         workshop.Note = Note
     }
-    // if (workshopname){
-    //     workshop.workshopname = workshopname
-    // }
 
     const updatedWorkshop = await workshop.save()
 
@@ -200,21 +161,9 @@ const addAgenda = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: 'Workshop not found' })
     }
 
-    // // Check for duplicate title
-    // const duplicate = await Note.findOne({ title }).lean().exec()
-
-    // // Allow renaming of the original note 
-    // if (duplicate && duplicate?._id.toString() !== id) {
-    //     return res.status(409).json({ message: 'Duplicate note title' })
-    // }
-
-    // workshop.User = User
     if (workshopAgenda){
         workshop.workshopAgenda = workshopAgenda
     }
-    // if (workshopname){
-    //     workshop.workshopname = workshopname
-    // }
 
     const updatedWorkshop = await workshop.save()
 

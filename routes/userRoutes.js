@@ -15,5 +15,4 @@ router.route('/useridByName')
     .post(usersController.getUserByMiroId)
     
 
-
 module.exports = router

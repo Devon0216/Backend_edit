@@ -1,7 +1,7 @@
 const User = require('../models/User')
 const Note = require('../models/Note')
 const asyncHandler = require('express-async-handler')
-const bcrypt = require('bcrypt')
+// const bcrypt = require('bcrypt')
 
 // @desc Get all users
 // @route GET /users
@@ -43,13 +43,8 @@ const getOneUser = asyncHandler(async (req, res) => {
 // @route GET /users/username
 // @access Private
 const getUserByMiroId = asyncHandler(async (req, res) => {
-    // console.log("req.body")
-    // console.log(req.body)
     // Get all users from MongoDB
     const { miroId } = req.body
-
-    // console.log("username")
-    // console.log(username)
 
     if (!miroId  ) {
         return res.status(400).json({ message: 'All fields are required' })
@@ -82,9 +77,6 @@ const createNewUser = asyncHandler(async (req, res) => {
     if (duplicate) {
         return res.status(409).json({ message: 'Duplicate miro Id' })
     }
-
-    // Hash password 
-    // const hashedPwd = await bcrypt.hash(password, 10) // salt rounds
 
     const userObject = { username, "miroId": miroId }
 

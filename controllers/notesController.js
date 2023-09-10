@@ -1,5 +1,5 @@
 const Note = require('../models/Note')
-const User = require('../models/User')
+// const User = require('../models/User')
 const Workshop = require('../models/Workshop')
 const asyncHandler = require('express-async-handler')
 
@@ -43,14 +43,6 @@ const getAllNotesForOneWorkshop = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: 'No notes found' })
     }
 
-    // Add username to each note before sending the response 
-    // See Promise.all with map() here: https://youtu.be/4lqJBBEpjRE 
-    // You could also do this with a for...of loop
-    // const notesWithWorkshop = await Promise.all(notes.map(async (note) => {
-    //     const workshop = await Workshop.findById(note.workshop).lean().exec()
-    //     return { ...note, workshopname: workshop.workshopname }
-    // }))
-
     res.json(notes)
 })
 
@@ -66,13 +58,6 @@ const createNewNote = asyncHandler(async (req, res) => {
     if (!workshop || !content) {
         return res.status(400).json({ message: 'All fields are required' })
     }
-
-    // // Check for duplicate title
-    // const duplicate = await Note.findOne({ title }).lean().exec()
-
-    // if (duplicate) {
-    //     return res.status(409).json({ message: 'Duplicate note title' })
-    // }
 
     // Create and store the new user 
     const note = await Note.create({ workshop, content })
@@ -102,14 +87,6 @@ const updateNote = asyncHandler(async (req, res) => {
     if (!note) {
         return res.status(400).json({ message: 'Note not found' })
     }
-
-    // // Check for duplicate title
-    // const duplicate = await Note.findOne({ title }).lean().exec()
-
-    // // Allow renaming of the original note 
-    // if (duplicate && duplicate?._id.toString() !== id) {
-    //     return res.status(409).json({ message: 'Duplicate note title' })
-    // }
 
     note.workshop = workshop
     note.content = content
@@ -163,13 +140,6 @@ const deleteNoteByWorkshop = asyncHandler(async (req, res) => {
     }
 
     const result = await Note.deleteMany({ workshop: `${workshop}` })
-
-    // var reply = "notes deleted"
-    // for (const item of result){
-    //     reply = `Note '${item.content}' with ID ${item._id} for workshop ${item.workshop} deleted \n`
-    // }
-
-    
 
     res.json(result)
 })
