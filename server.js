@@ -30,10 +30,10 @@ const io = socketIo(server, {
 const connectedUsers = {}; // Store connected users and their socket IDs
 
 io.on('connection', (socket) => {
-  console.log("connected")
+  // console.log("connected")
   const query = socket.handshake.query;
-  console.log("query")
-  console.log(query)
+  // console.log("query")
+  // console.log(query)
 
   // // Associate the user's socket with their user ID
 
@@ -41,29 +41,29 @@ io.on('connection', (socket) => {
     const userId = query.userId;
 
 
-    console.log("userId")
-    console.log(userId)
+    // console.log("userId")
+    // console.log(userId)
 
 
     connectedUsers[userId] = socket.id;
     io.emit('userList', Object.keys(connectedUsers));
 
-    console.log("connectedUsers")
-    console.log(connectedUsers)
+    // console.log("connectedUsers")
+    // console.log(connectedUsers)
  
     socket.on('sendMessage', (data) => {
-      console.log("connectedUsers")
-      console.log(connectedUsers)
-      console.log("data")
-      console.log(data.message) 
-      console.log(data.recipients)   
+      // console.log("connectedUsers")
+      // console.log(connectedUsers)
+      // console.log("data")
+      // console.log(data.message) 
+      // console.log(data.recipients)   
       // Send the message to the specified recipients' sockets
       data.recipients.forEach(recipientId => {
-        console.log(recipientId)
+        // console.log(recipientId)
         const recipientSocketId = connectedUsers[recipientId];
-        console.log(recipientSocketId)
+        // console.log(recipientSocketId)
         if (recipientSocketId) {
-          console.log("sedning messages")
+          // console.log("sedning messages")
           io.to(recipientSocketId).emit('receiveMessage', data.message );
         }
       });
@@ -71,17 +71,17 @@ io.on('connection', (socket) => {
 
 
     socket.on('sendRunnigAgenda', (data) => {
-      console.log("data")
-      console.log(data.agenda)
-      console.log(data.recipients)
+      // console.log("data")
+      // console.log(data.agenda)
+      // console.log(data.recipients)
       // Send the message to the specified recipients' sockets
       data.recipients.forEach(recipientId => {
-        console.log(recipientId)
+        // console.log(recipientId)
         const recipientSocketId = connectedUsers[recipientId];
-        console.log(recipientSocketId)
+        // console.log(recipientSocketId)
         if (recipientSocketId) {
-          console.log("sendRunnigAgenda")
-          console.log(data)
+          // console.log("sendRunnigAgenda")
+          // console.log(data)
           io.to(recipientSocketId).emit('receiveRunningAgenda', data );
         }
       });

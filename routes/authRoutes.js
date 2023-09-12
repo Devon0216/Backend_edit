@@ -4,7 +4,7 @@ const axios = require('axios');
 
 
 const getData = async (body) => {
-  console.log(body);
+  // console.log(body);
       const options = {
         'method': 'POST',
         'url': `https://api.miro.com/v1/oauth/token?grant_type=authorization_code&client_id=3458764560345376881&client_secret=Ut9LixsPne5ukQbVSPRsqtbfOoUV6QA2&code=${body}&redirect_uri=https://whiteboarddj.onrender.com/dash/authorize`,
