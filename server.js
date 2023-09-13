@@ -2,13 +2,12 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 const path = require('path')
-// const errorHandler = require('./middleware/errorHandler')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const corsOptions = require('./config/corsOptions')
 const connectDB = require('./config/dbConn')
 const mongoose = require('mongoose')
-const jsonwebtoken = require("jsonwebtoken");
+// const jsonwebtoken = require("jsonwebtoken");
 const PORT = process.env.PORT || 3500
 const natural = require('natural');
 const http = require('http');
@@ -17,77 +16,48 @@ const socketIo = require('socket.io');
 
 app.use(cors(corsOptions))
 
-
 const server = http.createServer(app);
 
+// Set up socket.io for the communication bewteen users
 const io = socketIo(server, {
   cors: {
-    origin: "https://whiteboarddj.onrender.com", // Allow requests from this origin
+    origin: "https://whiteboarddj.onrender.com",
     methods: ["GET", "POST"]
   }
 });
 
-const connectedUsers = {}; // Store connected users and their socket IDs
+const connectedUsers = {};
 
+// Listen for new connections from clients socket
 io.on('connection', (socket) => {
-  // console.log("connected")
   const query = socket.handshake.query;
-  // console.log("query")
-  // console.log(query)
-
-  // // Associate the user's socket with their user ID
 
   if (query.userId) {
     const userId = query.userId;
-
-
-    // console.log("userId")
-    // console.log(userId)
-
-
     connectedUsers[userId] = socket.id;
     io.emit('userList', Object.keys(connectedUsers));
-
-    // console.log("connectedUsers")
-    // console.log(connectedUsers)
  
+    // Send the connected users list to all connected sockets
     socket.on('sendMessage', (data) => {
-      // console.log("connectedUsers")
-      // console.log(connectedUsers)
-      // console.log("data")
-      // console.log(data.message) 
-      // console.log(data.recipients)   
-      // Send the message to the specified recipients' sockets
       data.recipients.forEach(recipientId => {
-        // console.log(recipientId)
         const recipientSocketId = connectedUsers[recipientId];
-        // console.log(recipientSocketId)
         if (recipientSocketId) {
-          // console.log("sedning messages")
           io.to(recipientSocketId).emit('receiveMessage', data.message );
         }
       });
     });
 
-
+    // Send the current running agenda to all connected sockets
     socket.on('sendRunnigAgenda', (data) => {
-      // console.log("data")
-      // console.log(data.agenda)
-      // console.log(data.recipients)
-      // Send the message to the specified recipients' sockets
       data.recipients.forEach(recipientId => {
-        // console.log(recipientId)
         const recipientSocketId = connectedUsers[recipientId];
-        // console.log(recipientSocketId)
         if (recipientSocketId) {
-          // console.log("sendRunnigAgenda")
-          // console.log(data)
           io.to(recipientSocketId).emit('receiveRunningAgenda', data );
         }
       });
     });
     
-
+    // Disconnect the socket when the user closes the browser
     socket.on('disconnect', () => {
       console.log("disconnected")
       if (query.userId) {
@@ -96,40 +66,22 @@ io.on('connection', (socket) => {
       }
     });
   }
-
-
 });
 
-// Set up routes or other middleware as needed
+// Start the server
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
+// console.log(process.env.NODE_ENV)
 
-
-
-
-
-
-
-
-
-
-
-console.log(process.env.NODE_ENV)
-
+// Connect to MongoDB
 connectDB()
 
-
-
-// app.use(cors(corsOptions))
-
+// Set up the application and routes
 app.use(express.json())
-
 app.use(cookieParser())
-
 app.use('/', express.static(path.join(__dirname, 'public')))
-
 app.use('/', require('./routes/root'))
 app.use('/users', require('./routes/userRoutes'))
 app.use('/notes', require('./routes/noteRoutes'))
@@ -138,54 +90,9 @@ app.use('/workshops', require('./routes/workshopRoutes'))
 app.use('/auth', require('./routes/authRoutes'))
 
 
-
-
-
-
-
-
-
-
-// // this is the login path
-// app.post("/", (req, res) => {
-//   const id = req.body?.id;
-//   const password = req.body?.password;
-//   const authToken = jsonwebtoken.sign({ id, password }, "DUMMYKEY");
-
-//   // now we will be setting cookies from server side only.
-//   // below cookie is httpOnly, its maxAge is 1 day
-//   // This cookie is valid to all the path in the domain
-//   res.cookie("authToken", authToken, {
-//     path: "/",
-//     maxAge: 24 * 60 * 60 * 1000,
-//     httpOnly: true,
-//   });
-
-//   res.sendStatus(200);
-// });
-
-// // this path will be used to check if the cookie is valid to auto login inside the application;
-// app.get("/autoLogin", (req, res) => {
-//   const cookie = req.headers.cookie;
-//   // if we received no cookies then user needs to login.
-//   if (!cookie || cookie === null) {
-//     return res.sendStatus(401);
-//   }
-
-//   return res.sendStatus(200);
-// });
-
-// // this path will be used to check if the cookie is valid to auto login inside the application;
-// app.get("/logout", (req, res) => {
-//   res.clearCookie("authToken");
-//   return res.sendStatus(200);
-// });
-
-
-
-
+// Set up the summarization route
 app.post('/summarise', (req, res) => {
-  const { notes, sensitivity } = req.body; // Assuming you're passing parameters as query parameters
+  const { notes, sensitivity } = req.body;
 
   try {
     // Tokenize the document into sentences
@@ -194,14 +101,12 @@ app.post('/summarise', (req, res) => {
 
     // Create a new TfIdf instance
     const tfidf = new natural.TfIdf();
-
-    // Add documents (sentences) to the TfIdf instance
     sentences.forEach((sentence) => {
       tfidf.addDocument(new natural.WordTokenizer().tokenize(sentence));
     });
 
     // Calculate the TF-IDF scores and select top sentences for summary
-    const numSentencesInSummary = sensitivity; // Change this as needed
+    const numSentencesInSummary = sensitivity;
     const summarySentences = [];
     sentences.forEach((sentence, sentenceIndex) => {
       let totalScore = 0;
@@ -212,7 +117,7 @@ app.post('/summarise', (req, res) => {
       summarySentences.push({ sentence, score: totalScore });
     });
 
-    // Sort sentences by score and get the top N sentences
+    // Sort sentences by score and get the top N sentences according to the sensitivity
     summarySentences.sort((a, b) => b.score - a.score);
     const topSentences = summarySentences.slice(0, numSentencesInSummary);
 
@@ -222,18 +127,11 @@ app.post('/summarise', (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'An error occurred' });
   }
-
-
 });
 
  
 
-
-
-
-
-
-
+// If error is encountered, send 404 page
 app.all('*', (req, res) => {
     res.status(404)
     if (req.accepts('html')) {
@@ -245,8 +143,7 @@ app.all('*', (req, res) => {
     }
 })
 
-// app.use(errorHandler)
-
+// Set up the MongoDB connection
 mongoose.connection.once('open', () => {
     console.log('Connected to MongoDB')
 })

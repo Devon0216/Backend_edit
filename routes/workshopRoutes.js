@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const workshopController = require('../controllers/workshopController')
 
+// Route to control all workshops related actions
 router.route('/')
     .get(workshopController.getAllWorkshops)
     .post(workshopController.createNewWorkshop)

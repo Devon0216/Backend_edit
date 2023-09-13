@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const usersController = require('../controllers/usersController')
 
+// Route to control all users related actions
 router.route('/')
     .get(usersController.getAllUsers)
     .post(usersController.createNewUser)

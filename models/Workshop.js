@@ -1,6 +1,7 @@
 
 const mongoose = require('mongoose')
 
+// MongoDB schema for workshops
 const workshopSchema = new mongoose.Schema(
     {
         User: {

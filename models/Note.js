@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 
+// MongoDB schema for notes
 const noteSchema = new mongoose.Schema(
     {
         workshop: {

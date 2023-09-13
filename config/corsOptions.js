@@ -1,5 +1,6 @@
 const allowedOrigins = require('./allowedOrigins')
 
+// Necessary CORS options for client web applications that are loaded in one domain to interact with different domain.
 const corsOptions = {
     origin: (origin, callback) => {
         if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
