@@ -7,7 +7,6 @@ const cors = require('cors')
 const corsOptions = require('./config/corsOptions')
 const connectDB = require('./config/dbConn')
 const mongoose = require('mongoose')
-// const jsonwebtoken = require("jsonwebtoken");
 const PORT = process.env.PORT || 3500
 const natural = require('natural');
 const http = require('http');
@@ -15,7 +14,6 @@ const socketIo = require('socket.io');
 
 
 app.use(cors(corsOptions))
-
 const server = http.createServer(app);
 
 // Set up socket.io for the communication bewteen users
@@ -72,8 +70,6 @@ server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// console.log(process.env.NODE_ENV)
-
 // Connect to MongoDB
 connectDB()
 
@@ -87,7 +83,6 @@ app.use('/notes', require('./routes/noteRoutes'))
 app.use('/miro', require('./routes/miroRoutes'))
 app.use('/workshops', require('./routes/workshopRoutes'))
 app.use('/auth', require('./routes/authRoutes'))
-
 
 // Set up the summarization route
 app.post('/summarise', (req, res) => {

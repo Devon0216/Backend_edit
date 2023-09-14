@@ -1,6 +1,5 @@
 /* Simple page layout for the server */
 body {
-    min-height: 100vh;
     background-color: #000;
     color: whitesmoke;
     display: grid;

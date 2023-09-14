@@ -47,7 +47,6 @@ const getWorkshopByName = asyncHandler(async (req, res) => {
 
 // Workshop function to get a specific workshop from MongoDB database, given the workshop ID
 const getWorkshopById = asyncHandler(async (req, res) => {
-    // Get all notes from MongoDB
     const { id } = req.body
 
     if (!id ) {
@@ -55,7 +54,6 @@ const getWorkshopById = asyncHandler(async (req, res) => {
     }
 
     const workshop = await Workshop.findById(id).exec()
-    // If no users 
     if (!workshop) {
         return res.status(400).json({ message: 'No workshops found' })
     }
@@ -77,7 +75,7 @@ const createNewWorkshop = asyncHandler(async (req, res) => {
     }
  
     const workshop = await Workshop.create({ User, workshopname })
-    if (workshop) { // Created 
+    if (workshop) {
         return res.status(201).json({ message: 'New workshop created' })
     } else {
         return res.status(400).json({ message: 'Invalid workshop data received' })
@@ -88,12 +86,10 @@ const createNewWorkshop = asyncHandler(async (req, res) => {
 const updateWorkshop = asyncHandler(async (req, res) => {
     const { id, User, Note, workshopname } = req.body
 
-    // Confirm data
     if (!id || !Array.isArray(Note) ) {
         return res.status(400).json({ message: 'ID is required' })
     }
 
-    // Confirm note exists to update
     const workshop = await Workshop.findById(id).exec()
     if (!workshop) {
         return res.status(400).json({ message: 'Workshop not found' })
