@@ -25,7 +25,6 @@ const io = socketIo(server, {
     methods: ["GET", "POST"]
   }
 });
-
 const connectedUsers = {};
 
 // Listen for new connections from clients socket
@@ -128,8 +127,6 @@ app.post('/summarise', (req, res) => {
     res.status(500).json({ error: 'An error occurred' });
   }
 });
-
- 
 
 // If error is encountered, send 404 page
 app.all('*', (req, res) => {
