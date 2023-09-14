@@ -1,17 +1,10 @@
-// const Note = require('../models/Note')
-// const User = require('../models/User')
 const Workshop = require('../models/Workshop')
 const asyncHandler = require('express-async-handler')
-// const mongoose = require('mongoose')
 
-// @desc Get all workshops 
-// @route GET /workshops
-// @access Private
+// Workshop function to get all workshops from MongoDB
 const getAllWorkshops = asyncHandler(async (req, res) => {
-    // Get all notes from MongoDB
     const workshops = await Workshop.find().lean()
 
-    // If no notes 
     if (!workshops?.length) {
         return res.status(400).json({ message: 'No workshops found' })
     }
@@ -19,11 +12,8 @@ const getAllWorkshops = asyncHandler(async (req, res) => {
     res.json(workshops)
 })
 
-// @desc Get one user workshops 
-// @route GET /workshops/userworkshop
-// @access Private
+// Workshop function to get all workshops for one specific user from MongoDB database, given the user ID
 const getUserWorkshops = asyncHandler(async (req, res) => {
-    // Get all notes from MongoDB
     const { userid } = req.body
 
     if (!userid ) {
@@ -31,8 +21,6 @@ const getUserWorkshops = asyncHandler(async (req, res) => {
     }
 
     const workshops = await Workshop.find({ User: `${userid}` }).lean().exec()
-
-    // If no users 
     if (!workshops?.length) {
         return res.status(400).json({ message: 'No workshops found' })
     }
@@ -40,14 +28,8 @@ const getUserWorkshops = asyncHandler(async (req, res) => {
     res.json(workshops)
 })
 
-
-
-
-// @desc Get one user workshops 
-// @route GET /workshops/workshopid
-// @access Private
+// Workshop function to get a specific workshop from MongoDB database, given the workshop name
 const getWorkshopByName = asyncHandler(async (req, res) => {
-    // Get all notes from MongoDB
     const { workshopname } = req.body
 
     if (!workshopname ) {
@@ -55,8 +37,6 @@ const getWorkshopByName = asyncHandler(async (req, res) => {
     }
 
     const workshops = await Workshop.find({ workshopname: `${workshopname}` }).lean().exec()
-
-    // If no users 
     if (!workshops?.length) {
         return res.status(400).json({ message: 'No workshops found' })
     }
@@ -65,9 +45,7 @@ const getWorkshopByName = asyncHandler(async (req, res) => {
 })
 
 
-// @desc Get one user workshops 
-// @route GET /workshops/workshopid
-// @access Private
+// Workshop function to get a specific workshop from MongoDB database, given the workshop ID
 const getWorkshopById = asyncHandler(async (req, res) => {
     // Get all notes from MongoDB
     const { id } = req.body
@@ -85,39 +63,28 @@ const getWorkshopById = asyncHandler(async (req, res) => {
     res.json(workshop)
 })
 
-
-// @desc Create new workshop
-// @route POST /workshop
-// @access Private
+// Workshop function to create a new workshop in MongoDB database, given the user ID and workshop name, and maybe the notes
 const createNewWorkshop = asyncHandler(async (req, res) => {
     const { User, Note, workshopname } = req.body
 
-    // Confirm data
     if (!User || !workshopname ) {
         return res.status(400).json({ message: 'All fields are required' })
     }
 
-    // // Check for duplicate title
     const duplicate = await Workshop.findOne({ workshopname }).lean().exec()
-
     if (duplicate) {
         return res.status(409).json({ message: 'Duplicate workshopname' })
     }
-
-    // Create and store the new user 
+ 
     const workshop = await Workshop.create({ User, workshopname })
-
     if (workshop) { // Created 
         return res.status(201).json({ message: 'New workshop created' })
     } else {
         return res.status(400).json({ message: 'Invalid workshop data received' })
     }
-
 })
 
-// @desc Update a workshop
-// @route PATCH /workshops
-// @access Private
+// Workshop function to update a workshop in MongoDB database, given the workshop ID, user ID, the notes and the workshopname
 const updateWorkshop = asyncHandler(async (req, res) => {
     const { id, User, Note, workshopname } = req.body
 
@@ -128,121 +95,87 @@ const updateWorkshop = asyncHandler(async (req, res) => {
 
     // Confirm note exists to update
     const workshop = await Workshop.findById(id).exec()
-
     if (!workshop) {
         return res.status(400).json({ message: 'Workshop not found' })
     }
-
     if (Note){
         workshop.Note = Note
     }
 
     const updatedWorkshop = await workshop.save()
-
     res.json(`'${updatedWorkshop.workshopname}' updated`)
 })
 
-
-// @desc Update a workshop
-// @route PATCH /userworkshop
-// @access Private
+// Workshop function to add an agenda to a workshop in MongoDB database, given the workshop ID and the agenda
 const addAgenda = asyncHandler(async (req, res) => {
     const { id,  workshopAgenda } = req.body
 
-    // Confirm data
     if (!id  ) {
         return res.status(400).json({ message: 'ID is required' })
     }
 
-    // Confirm note exists to update
     const workshop = await Workshop.findById(id).exec()
-
     if (!workshop) {
         return res.status(400).json({ message: 'Workshop not found' })
     }
-
     if (workshopAgenda){
         workshop.workshopAgenda = workshopAgenda
     }
 
     const updatedWorkshop = await workshop.save()
-
     res.json(`'${updatedWorkshop.workshopname}' updated`)
 })
 
-
-// @desc Update a workshop
-// @route PATCH /userworkshop
-// @access Private
+// Workshop function to add a summary to a workshop in MongoDB database, given the workshop ID and the summary
 const addSummary = asyncHandler(async (req, res) => {
     const { id,  workshopSummary } = req.body
 
-    // Confirm data
     if (!id ) {
         return res.status(400).json({ message: 'ID is required' })
     }
 
-    // Confirm note exists to update
     const workshop = await Workshop.findById(id).exec()
-
     if (!workshop) {
         return res.status(400).json({ message: 'Workshop not found' })
     }
-
     workshop.workshopSummary = workshopSummary
-
     const updatedWorkshop = await workshop.save()
-
     res.json(`'${updatedWorkshop.workshopname}' updated`)
 })
 
-// @desc Delete a note
-// @route DELETE /notes
-// @access Private
+// Workshop function to delete a workshop in MongoDB database, given the workshop ID
 const deleteWorkshop = asyncHandler(async (req, res) => {
     const { id } = req.body
 
-    // Confirm data
     if (!id) {
-        return res.status(400).json({ message: 'Note ID required' })
+        return res.status(400).json({ message: 'Workshop ID required' })
     }
 
-    // Confirm note exists to delete 
     const workshop = await Workshop.findById(id).exec()
-
     if (!workshop) {
         return res.status(400).json({ message: 'Workshop not found' })
     }
 
     const result = await workshop.deleteOne()
-
     const reply = `Workshop '${result.workshopname}'  deleted`
-
     res.json(reply)
 })
 
-// @desc Delete a note
-// @route DELETE /notes
-// @access Private
+// Workshop function to delete an agenda from a workshop in MongoDB database, given the workshop ID
 const deleteAgenda = asyncHandler(async (req, res) => {
     const { id } = req.body
 
-    // Confirm data
     if (!id) {
         return res.status(400).json({ message: 'workshop ID required' })
     }
 
-    // Confirm note exists to delete 
     const workshop = await Workshop.findById(id).exec()
-
     if (!workshop) {
         return res.status(400).json({ message: 'Workshop not found' })
     }
 
     workshop.workshopAgenda = ""
-
     await workshop.save();
-
     res.json(workshop)
 })
 

@@ -2,7 +2,7 @@ const Note = require('../models/Note')
 const Workshop = require('../models/Workshop')
 const asyncHandler = require('express-async-handler')
 
-// Notes function to get all notes from MongoDB
+// Notes function to get all notes from MongoDB database
 const getAllNotes = asyncHandler(async (req, res) => {
     const notes = await Note.find().lean()
 
@@ -18,7 +18,7 @@ const getAllNotes = asyncHandler(async (req, res) => {
     res.json(notesWithWorkshop)
 })
 
-// Notes function to get all notes for one specific workshop from MongoDB, given the workshop
+// Notes function to get all notes for one specific workshop from MongoDB database, given the workshop
 const getAllNotesForOneWorkshop = asyncHandler(async (req, res) => {
     const { workshop } = req.body
     const notes = await Note.find({ workshop: `${workshop}` }).lean().exec()
@@ -30,7 +30,7 @@ const getAllNotesForOneWorkshop = asyncHandler(async (req, res) => {
     res.json(notes)
 })
 
-// Notes function to create a new note for a workshop in MongoDB, given workshop and the note content
+// Notes function to create a new note for a workshop in MongoDB database, given workshop and the note content
 const createNewNote = asyncHandler(async (req, res) => {
     const { workshop, content } = req.body
 
@@ -48,7 +48,7 @@ const createNewNote = asyncHandler(async (req, res) => {
 
 })
 
-// Notes function to update a note in MongoDB, given the note id, workshop, and new note content
+// Notes function to update a note in MongoDB database, given the note id, workshop, and new note content
 const updateNote = asyncHandler(async (req, res) => {
     const { id, workshop, content } = req.body
 
@@ -69,7 +69,7 @@ const updateNote = asyncHandler(async (req, res) => {
     res.json(`'${updatedNote.content}' updated`)
 })
 
-// Notes function to delete a note in MongoDB, given the note id
+// Notes function to delete a note in MongoDB database, given the note id
 const deleteNote = asyncHandler(async (req, res) => {
     const { id } = req.body
 
@@ -87,7 +87,7 @@ const deleteNote = asyncHandler(async (req, res) => {
     res.json(reply)
 })
 
-// Notes function to delete all notes for a workshop in MongoDB, given the workshop id
+// Notes function to delete all notes for a workshop in MongoDB database, given the workshop id
 const deleteNoteByWorkshop = asyncHandler(async (req, res) => {
     const { workshop } = req.body
 
